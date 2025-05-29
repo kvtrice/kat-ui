@@ -1,32 +1,63 @@
 name: CI
 
 on:
-  push:
-    branches: [develop]
-  pull_request:
-    branches: [main]
+    push:
+        branches: [develop]
+    pull_request:
+        branches: [main]
 
 jobs:
-  lint-build:
-    runs-on: ubuntu-latest
+    lint:
+        name: 🧹 Lint
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+            - run: npm ci
+            - run: npm run lint
 
-    steps:
-      - name: 📥 Checkout repo
-        uses: actions/checkout@v3
+    typecheck:
+        name: 🧠 Type Check
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+            - run: npm ci
+            - run: npx tsc --noEmit
 
-      - name: 🛠️ Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
+    build:
+        name: 🏗️ Build
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+            - run: npm ci
+            - run: npm run build
 
-      - name: 📦 Install dependencies
-        run: npm ci
+    storybook:
+        name: 📘 Storybook Build
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+            - run: npm ci
+            - run: npm run build-storybook
 
-      - name: 🧹 Lint code
-        run: npm run lint
-
-      - name: 🧠 Type check
-        run: npx tsc --noEmit
-
-      - name: 🏗️ Build project
-        run: npm run build
+    tests:
+        name: 🧪 Unit Tests
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+            - run: npm ci
+            - run: npm run test
